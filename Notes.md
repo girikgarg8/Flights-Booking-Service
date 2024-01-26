@@ -24,8 +24,11 @@ If we simultaneously open a booking service in two different browsers, and try t
 If the first user makes the payment and the booking succeeds, then those seats are permanently blocked for the first user. However, if the first user doesn't make the payment within the stipulated time, then the seats are no longer held for the first user and are made available to all users.
 
 ![Concurrent Bookings](src/Concurrent_Bookings.png)
+
 ![Temporary_lock_acquired_on_bookings](src/Temporary_lock_acquired_on_seats.png)
+
 ![Session_timeout](src/Session_timeout.png)
+
 ![Transaction_state_diagram](src/Transaction_state_diagram.png)
 
 **What are database transactions?**

@@ -8,6 +8,11 @@ class BookingRepository extends CrudRepository {
     constructor() {
         super(Booking);
     }
+
+    async createBooking(data,transaction){ // we are binding this function inside the same transaction object that we are passing as a parameter
+        const response= await Booking.create(data,{transaction:transaction});
+        return response;
+    }
 }
 
 module.exports = BookingRepository;
