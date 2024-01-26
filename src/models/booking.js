@@ -34,11 +34,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     noOfSeats: {
-      type: Sequelize.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     totalCost: {
-      type: Sequelize.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false
     }
   }, {

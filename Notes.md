@@ -231,3 +231,64 @@ Reference: [Documentation](https://sequelize.org/docs/v6/other-topics/transactio
 Managed transactions are the ones which are managed by the Sequelize ORM, i.e. if there is any error or exception in the transaction, it will automatically rollback. Else if there are no errors, the transaction will commit. The programmer doesn't need to explicitly commit or rollback.
 
 In unmanaged transactions, the programmer has to explicitly define the logic for commit and rollback of transactions.
+
+**How does MySQL prevent race condition?**
+
+MySQL uses locking mechanisms to prevent race condition. Some of the locks which MySQL provides are:
+
+1. Shared locks: A shared lock is a type of lock which allows multiple transactions to read at the same time, but doesn't allow any of them to write. (Multiple readers are allowed as R-R is not a conflict but writers are not permitted because it can lead to R-W or W-W conflict). It is called "shared" because the data is actually shared between multiple readers.
+
+2. Exclusive locks: It is more strict than shared lock. It prevents multiple readers or writer to read the data at same time.
+So, only one reader or writer can access the data at a time.
+
+3. Intent locks: It is a type of lock which announces the intent of a transaction to read or write on some data. The benefit of using intent lock is that if a transaction has already announced its intent to read or write on a specific data, then another transaction can avoid acquiring a lock on that buffer.
+
+4. Row level locks: This allows transactions to acquire a lock on only a specific row, as compared to the shared or exclusive locks (which acquire lock on the entire database). For our usecase, we will be using row level locks in the Booking Service, so that a lock can be ensured on a particular record in the 'Flights' table. This prevents problems like two different people booking the same seat.
+
+The good part about MySQL is that it provides for MVCC (Multi Version Concurrency Control). What this means is that MySQL can actually allow multiple transactions to read or write on the same data without much conflict. 
+
+Now the question might be: How does MySQL ensure that it can read and write on the same data without being into conflict? The answer to this question is that,  MySQL sort of captures the data it is about to modify at start of transaction and writes the changes in an entirely different version of data. This allows transaction to continue working on the original data without conflict. 
+
+**Types of concurrency control systems**
+
+A system like a Booking System necessitates the need for a concurrency control system, in order to prevent race condition. 
+
+There are two types of concurrency control systems:
+
+1. Pessimistic concurrency control systems: Pessimistic concurrency control systems assumes the worst i.e. it by default assumes that two users will want to update the same record at the same time, and thus it prevents that possibility by using a row level lock, no matter how unlikely the conflict is.
+
+2. Optimistic concurrency control systems: In optimistic concurrency control systems, the system assumes that the possibility of conflicts is very less. So, it only checks for the possibility of conflicts before committing.
+
+Example of optimistic concurrency control systems:
+
+Suppose that there is only one seat left for a movie booking, and there are two users who are lookign forward to make the booking, and we are using an optimistic concurrency control system:
+
+Transaction:
+
+let any user enter
+
+decrement number of available seats
+
+if (available number of seats<0) rollback;
+
+else commit;
+
+Using the query `SELECT * FROM condition FOR UPDATE`, we can acquire a lock on the rows returned by the SELECT query. This lock will be held until the time the transaction (Which the SELECT query is a part of) commits. Any other transaction attempting to update these rows are placed into a time based queue to wait, and are executed chronologically after the first transaction is completed.
+
+As an example consider, 
+
+Transaction T1
+
+---remaining statements
+
+SELECT * FROM condition FOR UPDATE;
+
+--remaining statements
+
+COMMIT;
+
+When the transaction T1 acquires a lock on the result set of the SELECT statement, no other transaction is allowed to update those rows (which is good for us, as it ensures concurrency). This lock will be held until the time transaction T1 commits. Any other transaction which attempts to update the rows while the lock is held, is added to a queue.
+
+There can be different ways in which two services communicate, it can be through an HTTP API request, can be through RPC (Remote Procedure Call) or message queues. Message queues are particularly useful in case the scale of the producer application is much more than the consumer application.
+
+One thing to keep in mind is that we shouldn't be using an `UPDATE` query to update the seats in case of a successful booking, as it can lead to concurrency issues. Instead, we should use the increment functionality provided by Sequelize, which helps us to achieve these operations without running into concurrency issues.
