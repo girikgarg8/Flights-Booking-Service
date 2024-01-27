@@ -67,6 +67,16 @@ async function makePayment(data) {
     }
 }
 
+async function cancelOldBookings(){
+    try{
+        const time = new Date(Date.now() - 1000 * 300); //time 5 minutes ago
+        const response= await bookingRepository.cancelOldBookings(time);
+        return response;
+    }
+    catch(error){
+        throw error;
+    }
+}
 async function cancelBooking(bookingId) { /*
 In case we need to cancel the booking we'll set the status of the booking as CANCELLED and also increase the number of available seats in the flight
 */
@@ -94,5 +104,6 @@ In case we need to cancel the booking we'll set the status of the booking as CAN
 
 module.exports = {
     createBooking,
-    makePayment
+    makePayment,
+    cancelOldBookings
 }

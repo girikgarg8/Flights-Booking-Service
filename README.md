@@ -22,14 +22,15 @@ We use row level locks in the Booking Service, so that a lock can be ensured on 
 
 The entire logic to create a booking is atomic in nature, as we are leveraging the transactional capabilities provided by Sequelize. If the booking transaction fails at any point, the entire progress made so far is rolled back. The consistency of data is ensured by using the row based locks on the 'Flights' table, as discussed before.
 
-For the scope of this project, we are not going to integrate a payment gateway. Instead, we are going to create a mock payments API. We expect the payment to be completed within 5 minutes from the time of the initiation of the booking. Else the booking will transition from INTIATED to CANCELLED state.
+For the scope of this project, we are not going to integrate a payment gateway. Instead, we are going to create a mock payments API. We expect the payment to be completed within 5 minutes from the time of the initiation of the booking. Else the booking will transition from INTIATED to CANCELLED state and the held seats in the 'Flight' table will also be released.
+
+We also setup cron jobs to search every 10 minutes for bookings in the 'Bookings' table which have been timed out, and cancel those bookings.
 
 Some of the screenshots from this service are as follows:
 
 1. The booking rolls back in case the required number of seats are not available: 
 
 ![Booking transaction rolls back](src/Booking_transaction_rollsback_when_insufficient_seats.PNG)
-
 
 2. The booking commits in case the required number of seats are available:
 
@@ -42,3 +43,7 @@ Some of the screenshots from this service are as follows:
 4. The booking expires after the timeout is down:
 
 ![Booking expires after the timeout](src/Booking_expires_after_timeout.PNG)
+
+5. Running a cron job to clear old bookings:
+
+![Running cron job to clear old bookings](src/Cron_job_to_clear_old_bookings.PNG)
