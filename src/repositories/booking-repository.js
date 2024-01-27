@@ -12,7 +12,7 @@ class BookingRepository extends CrudRepository {
         const response = await Booking.create(data, { transaction: transaction });
         return response;
     }
-    async getBooking(data, transaction) {
+    async get(data, transaction) {
         const response = await Booking.findByPk(data);
         if (!response) {
             throw new AppError("Not able to find the resource", StatusCodes.NOT_FOUND);
@@ -20,7 +20,7 @@ class BookingRepository extends CrudRepository {
         return response;
     }
 
-    async updateBooking(id, data, transaction) {
+    async update(id, data, transaction) {
         const response = await Booking.update(data, {
             where: {
                 id: id

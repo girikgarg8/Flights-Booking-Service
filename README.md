@@ -22,7 +22,7 @@ We use row level locks in the Booking Service, so that a lock can be ensured on 
 
 The entire logic to create a booking is atomic in nature, as we are leveraging the transactional capabilities provided by Sequelize. If the booking transaction fails at any point, the entire progress made so far is rolled back. The consistency of data is ensured by using the row based locks on the 'Flights' table, as discussed before.
 
-For the scope of this project, we are not going to integrate a payment gateway. Instead, we are going to create a mock payments API. We expect the payment to be completed within x minutes from the time of the initiation of the booking. Else the booking will transition from INTIATED to CANCELLED state.
+For the scope of this project, we are not going to integrate a payment gateway. Instead, we are going to create a mock payments API. We expect the payment to be completed within 5 minutes from the time of the initiation of the booking. Else the booking will transition from INTIATED to CANCELLED state.
 
 Some of the screenshots from this service are as follows:
 
