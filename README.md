@@ -63,6 +63,3 @@ Some of the screenshots from this service are as follows:
 6. Preventing duplicate API requests by making the Payment API idempotent
 
 ![Idmepotent Payment API](src/Idempotent_API.PNG)
-
-
-TODO: attach HLD of project
