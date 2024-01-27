@@ -20,8 +20,11 @@ In order to validate whether the number of seats requested against the number of
 
 We use row level locks in the Booking Service, so that a lock can be ensured on a particular record in the 'Flights' table. This ensures consistency of data in the table.
 
+The entire logic to create a booking is atomic in nature, as we are leveraging the transactional capabilities provided by Sequelize. If the booking transaction fails at any point, the entire progress made so far is rolled back. The consistency of data is ensured by using the row based locks on the 'Flights' table, as discussed before.
 
-Some of the screenshots from this seervice are as follows:
+For the scope of this project, we are not going to integrate a payment gateway. Instead, we are going to create a mock payments API. We expect the payment to be completed within x minutes from the time of the initiation of the booking. Else the booking will transition from INTIATED to CANCELLED state.
+
+Some of the screenshots from this service are as follows:
 
 1. The booking rolls back in case the required number of seats are not available: 
 
@@ -35,3 +38,7 @@ Some of the screenshots from this seervice are as follows:
 3. The booking rolls back if the flight search service is not available:
 
 ![Booking transaction rolls back](src/Transaction_rollback_if_flight_search_Service_is_unavailable.PNG)
+
+4. The booking expires after the timeout is down:
+
+![Booking expires after the timeout](src/Booking_expires_after_timeout.PNG)
