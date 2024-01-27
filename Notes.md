@@ -13,7 +13,7 @@ Situation 1: The booking service initiates a request from its end, but the reque
 
 Situation 2: The booking service initiates a request to the payment gateway, and the payment fails at the payment gateway due to some reasons.
 
-Situation 3: The booking service initiates a request to the payment gateway and the payment is successful at the payment gateway. The payment gateway intiates a successful response, but it couldn't reach the booking service due to network issues or malformed reponse object.
+Situation 3: The booking service initiates a request to the payment gateway and the payment is successful at the payment gateway. The payment gateway intiates a successful response, but it couldn't reach the booking service due to network issues or malformed reponse object. There is the chance that the user might reinitiate the request in such case, and the money will be deducted twice.
 
 Situation 3: The booking service initiates a request to the payment gateway and the payment is unsuccessful at the payment gateway. The payment gateway intiates a successful response, but it couldn't reach the booking service due to network issues or malformed reponse object.
 
@@ -295,3 +295,11 @@ When the transaction T1 acquires a lock on the result set of the SELECT statemen
 There can be different ways in which two services communicate, it can be through an HTTP API request, can be through RPC (Remote Procedure Call) or message queues. Message queues are particularly useful in case the scale of the producer application is much more than the consumer application.
 
 One thing to keep in mind is that we shouldn't be using an `UPDATE` query to update the seats in case of a successful booking, as it can lead to concurrency issues. Instead, we should use the increment functionality provided by Sequelize, which helps us to achieve these operations without running into concurrency issues.
+
+There's one more problem that we solved in the Booking service: which is if the user by mistake makes the API call to payment service twice, the money is going to be deducted twice. In order to solve this problem, we make the Payment API as an idempotent API. What this means is that, for every API request, we will generate a unique idempotency key. If that particular idempotency key has already been served by the payment API, the request will not be allowed. Else, we are going to serve that request, and if that request is successful, we will store this idempotency key in some storage mechanism like Database, caching mechanisms like Redis or an in-memory data structure.
+
+Accessing from a database is a slow operation, so either we can go for a cache or in-memory data structure for faster access. In-memory data structure will lose the content once the server is restarted, but that shouldn't be a problem because we anyways need to flush the old idempotency keys.
+
+In order to prevent misuse of this idempotency key by some bad actor, we can generate a UUID or have some regex check on the server side, so that the client can't play around with the idempotency key.
+
+Idempotency as a concept in Maths or Computer Science is the property of certain operations where they can be applied multiple times without changing the result beyond the first successful operation.

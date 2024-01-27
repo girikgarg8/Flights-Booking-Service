@@ -1,3 +1,12 @@
+# Flights Booking Service
+
+Introduction
+The Flights Booking Service is a critical microservice responsible for handling flight bookings in the Flight Ticket Booking system. It provides the necessary APIs to manage flight bookings, along with advanced features such as idempotency key for handling retries after successful payment, scheduled cron jobs for canceling old pending bookings, and a concurrent seat locking mechanism to ensure data consistency.
+
+**High Level Design of the project**
+
+![High Level Design of the project](src/High-Level-Design.png)
+
 **Schema of Booking Service**
 
 ![Schema](src/Schema.png)
@@ -26,6 +35,9 @@ For the scope of this project, we are not going to integrate a payment gateway. 
 
 We also setup cron jobs to search every 10 minutes for bookings in the 'Bookings' table which have been timed out, and cancel those bookings.
 
+There's one more problem that we solved in this service: which is if the user by mistake makes the API call to payment service twice, the money is going to be deducted twice. In order to solve this problem, we make the Payment API as an idempotent API. What this means is that, for every API request, we will generate a unique idempotency key. If that particular idempotency key has already been served by the payment API, the request will not be allowed. Else, we are going to serve that request, and if that request is successful, we will store this idempotency key in some storage mechanism like Database, caching mechanisms like Redis or an in-memory data structure. Four our project, we will be using an in-memory data structure.
+
+
 Some of the screenshots from this service are as follows:
 
 1. The booking rolls back in case the required number of seats are not available: 
@@ -47,3 +59,10 @@ Some of the screenshots from this service are as follows:
 5. Running a cron job to clear old bookings:
 
 ![Running cron job to clear old bookings](src/Cron_job_to_clear_old_bookings.PNG)
+
+6. Preventing duplicate API requests by making the Payment API idempotent
+
+![Idmepotent Payment API](src/Idempotent_API.PNG)
+
+
+TODO: attach HLD of project
