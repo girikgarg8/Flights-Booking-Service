@@ -7,7 +7,7 @@ Whenever we are making a system that involves booking (flights, trains, movies) 
 
 There can be certain other types of scenarios as well, discussed below:
 
-![Challenges in Booking System](src/Challenges_in_Booking.PNG)
+![Challenges in Booking System](./Challenges_in_Booking.PNG)
 
 Situation 1: The booking service initiates a request from its end, but the request couldn't reach the payment gateway due to some reasons.
 
@@ -23,13 +23,13 @@ If we simultaneously open a booking service in two different browsers, and try t
 
 If the first user makes the payment and the booking succeeds, then those seats are permanently blocked for the first user. However, if the first user doesn't make the payment within the stipulated time, then the seats are no longer held for the first user and are made available to all users.
 
-![Concurrent Bookings](src/Concurrent_Bookings.png)
+![Concurrent Bookings](./Concurrent_Bookings.png)
 
-![Temporary_lock_acquired_on_bookings](src/Temporary_lock_acquired_on_seats.png)
+![Temporary_lock_acquired_on_bookings](./Temporary_lock_acquired_on_seats.png)
 
-![Session_timeout](src/Session_timeout.png)
+![Session_timeout](./Session_timeout.png)
 
-![Transaction_state_diagram](src/Transaction_state_diagram.png)
+![Transaction_state_diagram](./Transaction_state_diagram.png)
 
 **What are database transactions?**
 
@@ -53,7 +53,7 @@ Let's see initial state of the database: A's balance: 1000+6% interest= 1060
 
 First, let's see what happens if these two transactions are run serially:
 
-![Serial execution of transactions](src/Serial_exection_of_transactions.PNG)
+![Serial execution of transactions](./Serial_exection_of_transactions.PNG)
 
 In case 1, A's final balance is (1000-100) * (1.06)=954, and B's final balance is (1000+100) * (1.06)= 1166, total balance= 2120, so the database is in a consistent state before and after the transaction.
 
@@ -63,7 +63,7 @@ If all the transactions in a database are run in a serial manner, then the datab
 
 Let's consider some cases of parallel execution:
 
-![Parallel Execution of transactions](src/Parallel_execution_of_transactions.PNG)
+![Parallel Execution of transactions](./Parallel_execution_of_transactions.PNG)
 
 In case-1, A's final balance is going to be (1000-100) *  (1.06)=  954 and B's final balance is going to be (1000+100) * (1.06)= 1166, hence the total balance will be 2120. Hence the database is in a consistent state before and after the transaction.
 
@@ -77,20 +77,20 @@ Reason why database is not in a consistent state in this case: The 100 cash whic
 
 It is also known as unrepeatable read. In this type of conflict, a transaction reads the value which was written by some other committed transaction. As a result, the transaction on reading, finds a different value than what it got, by reading before.
 
-![Example](src/Read_Write_Conflict.png)
+![Example](./Read_Write_Conflict.png)
 
 - Write Read conflict:
 
 It is also known as dirty read problem. In this type of conflict, a transaction reads the value which was written by an uncommitted transaction. 
 
-![Example](src/Write_read_conflict.png)
+![Example](./Write_read_conflict.png)
 
 
 - Write Write conflict: 
 
 It is also known as lost update problem. In this conflict, one of the transactions overrides the value written by other transaction.
 
-![Example](src/Write_write_conflict.png)
+![Example](./Write_write_conflict.png)
 
 **Atomicity**
 

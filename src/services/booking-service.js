@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { BookingRepository } = require('../repositories/index');
-const { ServerConfig } = require('../config/index')
+const { ServerConfig, Queue } = require('../config/index')
 const db = require('../models');
 const AppError = require('../utils/errors/app-error');
 const { StatusCodes } = require('http-status-codes');
@@ -57,23 +57,32 @@ async function makePayment(data) {
             throw new AppError("The booking has expired", StatusCodes.BAD_REQUEST);
         }
         //We are assuming that the payment is successful
-
         await bookingRepository.update(data.bookingId, { status: BOOKED }, transaction);
+        const flightResponse = await axios.get(`${ServerConfig.FLIGHT_SEARCH_SERVICE}/api/v1/flights/${bookingDetails.flightId}`);
+        const userResponse = await axios.get(`${ServerConfig.FLIGHT_API_GATEWAY}/api/v1/users/${bookingDetails.userId}`);
+        const flightData = flightResponse.data.data;
+        const userData = userResponse.data.data;
+        Queue.sendData({
+            recipientEmail: `${userData.email}`,
+            subject: 'Booking confirmation',
+            text: `Your payment of Rs. ${bookingDetails.totalCost} is successful. We hereby confirm your booking for ${bookingDetails.noOfSeats} seats for the flight ${flightData.flightNumber}`
+        })
         await transaction.commit();
     }
     catch (error) {
+        console.log('Error is', error);
         await transaction.rollback();
         throw error;
     }
 }
 
-async function cancelOldBookings(){
-    try{
+async function cancelOldBookings() {
+    try {
         const time = new Date(Date.now() - 1000 * 300); //time 5 minutes ago
-        const response= await bookingRepository.cancelOldBookings(time);
+        const response = await bookingRepository.cancelOldBookings(time);
         return response;
     }
-    catch(error){
+    catch (error) {
         throw error;
     }
 }

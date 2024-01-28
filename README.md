@@ -5,11 +5,11 @@ The Flights Booking Service is a critical microservice responsible for handling 
 
 **High Level Design of the project**
 
-![High Level Design of the project](src/High-Level-Design.png)
+![High Level Design of the project](./High-Level-Design.png)
 
 **Schema of Booking Service**
 
-![Schema](src/Schema.png)
+![Schema](./Schema.png)
 
 **High level flow of Booking Service**
 
@@ -42,24 +42,24 @@ Some of the screenshots from this service are as follows:
 
 1. The booking rolls back in case the required number of seats are not available: 
 
-![Booking transaction rolls back](src/Booking_transaction_rollsback_when_insufficient_seats.PNG)
+![Booking transaction rolls back](./Booking_transaction_rollsback_when_insufficient_seats.PNG)
 
 2. The booking commits in case the required number of seats are available:
 
-![Booking transaction commits](src/Booking-transaction-commits.PNG)
+![Booking transaction commits](./Booking-transaction-commits.PNG) 
 
 3. The booking rolls back if the flight search service is not available:
 
-![Booking transaction rolls back](src/Transaction_rollback_if_flight_search_Service_is_unavailable.PNG)
+![Booking transaction rolls back](./Transaction_rollback_if_flight_search_Service_is_unavailable.PNG)
 
 4. The booking expires after the timeout is down:
 
-![Booking expires after the timeout](src/Booking_expires_after_timeout.PNG)
+![Booking expires after the timeout](./Booking_expires_after_timeout.PNG)
 
 5. Running a cron job to clear old bookings:
 
-![Running cron job to clear old bookings](src/Cron_job_to_clear_old_bookings.PNG)
+![Running cron job to clear old bookings](./Cron_job_to_clear_old_bookings.PNG)
 
 6. Preventing duplicate API requests by making the Payment API idempotent
 
-![Idmepotent Payment API](src/Idempotent_API.PNG)
+![Idmepotent Payment API](./Idempotent_API.PNG)
